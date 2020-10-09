@@ -1,0 +1,19 @@
+builds:
+  -
+    main: ./cmd/insiderci/
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+
+archives:
+  -
+    replacements:
+      amd64: x86_64
+    format_overrides:
+      - goos: windows
+        format: zip
