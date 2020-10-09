@@ -36,13 +36,12 @@ const reportTemplate = `
       </div>
       <div class="row">
         <div class="col-12">
-          <h6>Score Security {{ .SastResult.SecurityScore }}/100</h6>
+          <h6>Score Security {{ .SecurityScore }}/100</h6>
         </div>
         <hr />
       </div>
       <hr />
-      <div class="row">
-      </div>
+      <div class="row"></div>
       <hr />
       <hr />
       <div class="row">
@@ -51,7 +50,7 @@ const reportTemplate = `
           <div class="table-responsive">
             <table class="table table-sm">
               <tbody>
-                {{ range .SastDras }}
+                {{ range.SastDras }}
                 <tr>
                   <td class="user-select-all">
                     <b>File :</b>{{ .File}}<br />
@@ -65,31 +64,6 @@ const reportTemplate = `
           </div>
         </div>
       </div>
-      {{ if .SastLibraries }}
-      <div class="row">
-        <div class="col-12">
-          <h6>Libraries</h6>
-          <div class="table-responsive">
-            <table class="table table-sm">
-              <thead>
-                <tr>
-                  <td>Name</td>
-                  <td>Version</td>
-                </tr>
-              </thead>
-              <tbody>
-                {{ range .SastLibraries }}
-                <tr class="user-select-all">
-                  <td>{{ .Name}}</td>
-                  <td>{{ .Version}}</td>
-                </tr>
-                {{ end }}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      {{ end }}
       {{ if .SastVulnerabilities }}
       <div class="row">
         <div class="col-12">
@@ -97,7 +71,7 @@ const reportTemplate = `
           <div class="">
             <table class="table table-sm" style="table-layout: fixed;">
               <tbody>
-                {{ range .SastVulnerabilities }}
+                {{ range.SastVulnerabilities }}
                 <tr>
                   <td class="user-select-all">
                     <p class="text-break">
@@ -122,11 +96,9 @@ const reportTemplate = `
       <div
         class="row"
         style="border-top: #dee2e6 1px solid; padding-top: 10px;"
-      >
-      </div>
+      ></div>
     </div>
   </body>
 </html>
-
 
 `

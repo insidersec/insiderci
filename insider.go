@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	SastURL   = ""
-	UploadURL = ""
+	UploadURL = "https://api.insidersec.io"
+	SastURL   = "https://backend.insidersec.io"
 )
 
 type sastError struct {
@@ -23,22 +23,10 @@ type sastError struct {
 }
 
 type Sast struct {
-	ID         int    `json:"id"`
-	Log        string `json:"log"`
-	Status     int    `json:"status"`
-	SastResult struct {
-		ID            int    `json:"id"`
-		AverageCvss   string `json:"averageCvss"`
-		SecurityScore string `json:"securityScore"`
-		NumberOfLines int    `json:"numberOfLines"`
-		Size          string `json:"size"`
-		Md5           string `json:"md5"`
-		Sha1          string `json:"sha1"`
-		Sha256        string `json:"sha256"`
-		Name          string `json:"name"`
-		Version       string `json:"version"`
-		Sast          int    `json:"sast"`
-	} `json:"SastResult"`
+	ID                  int    `json:"id"`
+	Log                 string `json:"log"`
+	Status              int    `json:"status"`
+	SecurityScore       int    `json:"securityScore"`
 	SastVulnerabilities []struct {
 		ID            int      `json:"id"`
 		Cwe           string   `json:"cwe"`
@@ -58,28 +46,13 @@ type Sast struct {
 		Analyse       bool     `json:"analyse"`
 		VulID         string   `json:"vul_id"`
 		AffectedFiles []string `json:"affectedFiles"`
-	} `json:"SastVulnerabilities"`
-	SastScas []struct {
-		CWE           string `json:"cwe"`
-		CVEs          string `json:"cves"`
-		Title         string `json:"title"`
-		Severity      string `json:"severity"`
-		ID            int    `json:"advisoryId"`
-		Description   string `json:"description"`
-		Recomendation string `json:"recomendation"`
-	} `json:"SastScas"`
-	SastLibraries []struct {
-		Name                 string `json:"name"`
-		Version              string `json:"current"`
-		Source               string `json:"source"`
-		CompatibilityVersion string `json:"compatiblityVersion"`
-	} `json:"SastLibraries"`
+	} `json:"vulnerabilities"`
 	SastDras []struct {
 		Dra  string `json:"dra"`
 		File string `json:"file"`
 		ID   int    `json:"id"`
 		Type string `json:"type"`
-	} `json:"SastDras"`
+	} `json:"dra"`
 }
 
 type sastExecution struct {
@@ -102,7 +75,7 @@ type Insider struct {
 func New(email, password, filename string, component int) (*Insider, error) {
 	token, err := auhenticate(email, password)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("auhenticate %w", err)
 	}
 	return &Insider{
 		logger:    log.New(os.Stderr, "", log.LstdFlags),
@@ -115,11 +88,11 @@ func New(email, password, filename string, component int) (*Insider, error) {
 func (i *Insider) Start() (*Sast, error) {
 	sast, err := i.startAnalysis()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("start analysis %w", err)
 	}
 	sast, err = i.watchAnalysis(sast)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("watch analysis %w", err)
 	}
 	if sast.Status != 2 {
 		return nil, fmt.Errorf(sast.Log)
@@ -130,7 +103,7 @@ func (i *Insider) Start() (*Sast, error) {
 
 func (i *Insider) watchAnalysis(s Sast) (Sast, error) {
 	i.logger.Println("Waiting to finish analysis")
-	req, err := i.request(http.MethodGet, fmt.Sprintf("%s/api/sast/%d/component/%d", SastURL, s.ID, i.component), nil)
+	req, err := i.request(http.MethodGet, fmt.Sprintf("%s/api/sast/%d/component/%d/ci", SastURL, s.ID, i.component), nil)
 	if err != nil {
 		return Sast{}, err
 	}
@@ -142,6 +115,10 @@ func (i *Insider) watchAnalysis(s Sast) (Sast, error) {
 		b, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return Sast{}, err
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			return Sast{}, fmt.Errorf("status code %d: %s", resp.StatusCode, string(b))
 		}
 
 		var res Sast
@@ -253,13 +230,13 @@ func auhenticate(email, password string) (string, error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("status code: %d", resp.StatusCode)
-	}
-
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("status code: %d\n%s", resp.StatusCode, string(body))
 	}
 
 	response := make(map[string]interface{})

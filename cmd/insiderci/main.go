@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 	"text/template"
 
 	"gitlab.inlabs.app/cyber/insiderci"
@@ -30,7 +29,7 @@ var (
 	emailFlag     = flag.String("email", "", "Insider email")
 	passwordFlag  = flag.String("password", "", "Insider password")
 	noFailFlag    = flag.Bool("no-fail", false, "Do not fail analysis, even if issues were found")
-	scoreFlag     = flag.Float64("score", 0, "Score to fail pipeline")
+	scoreFlag     = flag.Int("score", 0, "Score to fail pipeline")
 	componentFlag = flag.Int("component", 0, "Component ID")
 	saveFlag      = flag.Bool("save", false, "Save results on file in json and html format")
 	versionFlag   = flag.Bool("version", false, "Print version")
@@ -58,13 +57,7 @@ func run(args []string, out io.Writer) int {
 		return 1
 	}
 
-	dir := args[0]
-	filename, err := zipDir(dir)
-	if err != nil {
-		fmt.Fprintf(out, "Error to zip directory %s: %v\n", dir, err)
-		return 1
-	}
-
+	filename := args[0]
 	insider, err := insiderci.New(*emailFlag, *passwordFlag, filename, *componentFlag)
 	if err != nil {
 		fmt.Fprintf(out, "Error: %v\n", err)
@@ -88,12 +81,7 @@ func run(args []string, out io.Writer) int {
 
 	if !*noFailFlag {
 		if len(sast.SastVulnerabilities) > 0 {
-			sastScore, err := strconv.ParseFloat(sast.SastResult.SecurityScore, 64)
-			if err != nil {
-				fmt.Fprintf(out, "Unexpepcted score value %s: %v\n", sast.SastResult.SecurityScore, err)
-				return 1
-			}
-			if sastScore > *scoreFlag {
+			if sast.SecurityScore > *scoreFlag {
 				return 1
 			}
 		}
@@ -187,7 +175,7 @@ func saveSastHtml(component int, sast *insiderci.Sast) error {
 
 func resumeSast(out io.Writer, sast *insiderci.Sast) {
 	fmt.Fprintln(out, "-----------------------------------------------------------------------------------------------------------------------")
-	fmt.Fprintf(out, "Score Security %v/100\n", sast.SastResult.SecurityScore)
+	fmt.Fprintf(out, "Score Security %v/100\n", sast.SecurityScore)
 	fmt.Fprintln(out, "-----------------------------------------------------------------------------------------------------------------------")
 	if len(sast.SastDras) > 0 {
 		fmt.Fprintf(out, "DRA - Data Risk Analytics\n")
@@ -195,14 +183,6 @@ func resumeSast(out io.Writer, sast *insiderci.Sast) {
 			fmt.Fprintf(out, "File: %s\n", dra.File)
 			fmt.Fprintf(out, "Dra: %s\n", dra.Dra)
 			fmt.Fprintf(out, "Type: %s\n", dra.Type)
-		}
-	}
-
-	if len(sast.SastLibraries) > 0 {
-		fmt.Fprintln(out, "-----------------------------------------------------------------------------------------------------------------------")
-		fmt.Fprintf(out, "%-20v %-10v \n", "Library", "Version")
-		for _, lib := range sast.SastLibraries {
-			fmt.Fprintf(out, "%-20v %-10v \n", lib.Name, lib.Version)
 		}
 	}
 
