@@ -30,5 +30,5 @@ insiderci is a utility that can be used on CI mats to perform tests on the Insid
 
 Para iniciar a analise é necessário ter acesso a plataforma do Insider, um componente criado e um arquivo zip/apk/ipa pronto para analise. O Insider CI vai esperar até a analise ser finaliza, e após isso, caso alguma vulnerabilidade seja encontrada, será finalizado com erro.
 ```bash
-insiderci -email $INSIDER_EMAIL -password $INSIDER_PASSWORD -compoenet 1 arquivo_zip.zip
+insiderci -email $INSIDER_EMAIL -password $INSIDER_PASSWORD -component 1 arquivo_zip.zip
 ```
