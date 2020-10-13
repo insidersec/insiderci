@@ -81,7 +81,10 @@ func run(args []string, out io.Writer) int {
 
 	if !*noFailFlag {
 		if len(sast.SastVulnerabilities) > 0 {
-			if sast.SecurityScore > *scoreFlag {
+			if *scoreFlag == 0 {
+				return 1
+			}
+			if *scoreFlag >= sast.SecurityScore {
 				return 1
 			}
 		}
