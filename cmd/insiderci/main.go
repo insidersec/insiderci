@@ -85,6 +85,7 @@ func run(args []string, out io.Writer) int {
 				return 1
 			}
 			if *scoreFlag >= sast.SecurityScore {
+				fmt.Fprintf(out, "Score %d lower than %d\n", sast.SecurityScore, *scoreFlag)
 				return 1
 			}
 		}
