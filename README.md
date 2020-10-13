@@ -3,7 +3,7 @@ Insider CI é um utilitário que pode ser utilizado nas esteiras de CI para real
 
 
 ## Download
-TODO
+Você encontra binários pré compilados para Linux, Windows e Mac [aqui](https://github.com/insidersec/insiderci/releases/latest).
 
 ## Utilização
 Help
