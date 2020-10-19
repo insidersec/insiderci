@@ -34,11 +34,13 @@ $ tar -xf insiderci_0.3.0_linux_x86_64.tar.gz
 $ chmod +x ./insiderci
 $ ./insiderci -email "USUARIO" -password "SENHA" -score "SCORE" -component "ID_COMPONENTE"  "ARQUIVO"
 ```
-USUÁRIO: Usuário do Insider.
-SENHA: Senha do Insider.
-SCORE: Score mínimo de segurança que é valido para prosseguir a pipeline.
-ID_COMPONENTE: ID do componente no Insider.
-ARQUIVO: Nome do arquivo que deve ser analisado.
+| Variável | Descrição |
+| -------- | --------- |
+|USUÁRIO|Usuário do Insider.|
+|SENHA|Senha do Insider.|
+|SCORE|Score mínimo de segurança que é valido para prosseguir a pipeline.|
+|ID_COMPONENTE|ID do componente no Insider.|
+|ARQUIVO|Nome do arquivo que deve ser analisado.|
 
 #### Exemplo de execução
 ```sh
