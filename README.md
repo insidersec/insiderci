@@ -1,12 +1,11 @@
-# insiderci
-Insider CI é um utilitário que pode ser utilizado nas esteiras de CI para realizar testes na plataforma do Insider.
-
+# InsiderCI
+Insider CI é um utilitário que pode ser utilizado em todas esteiras de CI para realizar execuções na plataforma [Insider](https://insidersec.io/).
 
 ## Download
 Você encontra binários pré compilados para Linux, Windows e Mac [aqui](https://github.com/insidersec/insiderci/releases/latest).
 
-## Utilização
-Help
+## Utilizando InsiderCI
+### Help
 ```bash
 insiderci -h
 
@@ -27,8 +26,22 @@ insiderci is a utility that can be used on CI mats to perform tests on the Insid
   -version
         Print version
 ```
+### Executando
 
-Para iniciar a analise é necessário ter acesso a plataforma do Insider, um componente criado e um arquivo zip/apk/ipa pronto para analise. O Insider CI vai esperar até a analise ser finaliza, e após isso, caso alguma vulnerabilidade seja encontrada, será finalizado com erro.
-```bash
-insiderci -email $INSIDER_EMAIL -password $INSIDER_PASSWORD -component 1 arquivo_zip.zip
+```sh
+$ wget https://github.com/insidersec/insiderci/releases/download/v0.3.0/insiderci_0.3.0_linux_x86_64.tar.gz -q 
+$ tar -xf insiderci_0.3.0_linux_x86_64.tar.gz
+$ chmod +x ./insiderci
+$ ./insiderci -email "USUARIO" -password "SENHA" -score "SCORE" -component "ID_COMPONENTE"  "ARQUIVO"
 ```
+USUÁRIO: Usuário do Insider.
+SENHA: Senha do Insider.
+SCORE: Score mínimo de segurança que é valido para prosseguir a pipeline.
+ID_COMPONENTE: ID do componente no Insider.
+ARQUIVO: Nome do arquivo que deve ser analisado.
+
+#### Exemplo de execução
+```sh
+$ ./insiderci -email 'insider@insider.com' -password 'senha123' -score 80 -component 1 'build.zip'
+```
+Para iniciar a analise é necessário ter acesso a plataforma do Insider, um componente criado e um arquivo zip/apk/ipa pronto para analise. O InsiderCI vai esperar até a analise ser finaliza, e após isso, caso alguma vulnerabilidade seja encontrada, será finalizado com erro.
