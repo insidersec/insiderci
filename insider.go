@@ -10,15 +10,39 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
 var (
-	UploadURL = "https://api.insidersec.io"
-	SastURL   = "https://backend.insidersec.io"
+	UploadURL = "https://dev.insidersec.io"
+	SastURL   = "https://backend.dev.insidersec.io"
 )
 
 type sastError struct {
+	Message string `json:"message"`
+}
+
+type ListTech []struct {
+	ID               int       `json:"id"`
+	Name             string    `json:"name"`
+	Technology       string    `json:"technology"`
+	FormatPermission string    `json:"formatPermission"`
+	Description      string    `json:"description"`
+	Enabled          bool      `json:"enabled"`
+	Jenkins          bool      `json:"jenkins"`
+	TemplateJenkins  string    `json:"templateJenkins"`
+	CreatedAt        time.Time `json:"createdAt"`
+	UpdatedAt        time.Time `json:"updatedAt"`
+}
+
+type ComponentPost struct {
+	Name string `json:"name"`
+	Tech int    `json:"technology"`
+}
+
+type ComponentReceive struct {
+	ID      int    `json:"id"`
 	Message string `json:"message"`
 }
 
@@ -70,6 +94,14 @@ type Insider struct {
 	token     string
 	filename  string
 	component int
+}
+
+func Autenticate(email, password string) (string, error) {
+	token, err := auhenticate(email, password)
+	if err != nil {
+		return "", fmt.Errorf("auhenticate %w", err)
+	}
+	return token, nil
 }
 
 func New(email, password, filename string, component int) (*Insider, error) {
@@ -248,6 +280,86 @@ func auhenticate(email, password string) (string, error) {
 	if !ok {
 		return "", fmt.Errorf("not found token in response: %s", string(body))
 	}
-
 	return token.(string), nil
+}
+
+func GetTech(token string) (ListTech, error) {
+	var res ListTech
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%v/api/technologies", SastURL), nil)
+	if err != nil {
+		return res, fmt.Errorf(err.Error())
+	}
+	req.Header.Set("Authorization", token)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return res, fmt.Errorf(err.Error())
+	}
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return res, fmt.Errorf(err.Error())
+	}
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("status code %d: %s \n", resp.StatusCode, string(b))
+	}
+
+	if err := json.Unmarshal(b, &res); err != nil {
+		return res, fmt.Errorf(err.Error())
+	}
+
+	return res, nil
+}
+
+func ChooseTech(techlist ListTech, tech string) (int, error) {
+	for _, v := range techlist {
+		if strings.ToLower(tech) == strings.ToLower(v.Name) {
+			return v.ID, nil
+		}
+	}
+	fmt.Printf("\nAvailable technologies, please choose one. \n\n")
+	for _, v := range techlist {
+		fmt.Println(strings.ToLower(strings.ReplaceAll(v.Name, " ", "_")))
+	}
+	fmt.Println("\nUsage:")
+	fmt.Printf("./insiderci -email \"<user-email>\" -password  \"<password>\" -score 80 -tech \"%v\"  \"<file-name>\" \n", techlist[1].Name)
+	return 0, fmt.Errorf(" ")
+}
+
+func GetComponet(token, name string, tech int) (int, error) {
+	post := ComponentPost{
+		Name: name,
+		Tech: tech,
+	}
+	b, err := json.Marshal(post)
+	if err != nil {
+		return 0, err
+	}
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%v/api/component/ci", SastURL), bytes.NewBuffer(b))
+	if err != nil {
+		return 0, err
+	}
+	req.Header.Set("Authorization", token)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return 0, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return 0, fmt.Errorf("status code:aquiii  %d\n%s", resp.StatusCode, string(body))
+	}
+
+	var ret ComponentReceive
+
+	if err := json.Unmarshal(body, &ret); err != nil {
+		return 0, err
+	}
+
+	return ret.ID, nil
 }

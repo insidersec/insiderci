@@ -6,9 +6,11 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"gitlab.inlabs.app/cyber/insiderci"
@@ -33,6 +35,7 @@ var (
 	componentFlag = flag.Int("component", 0, "Component ID")
 	saveFlag      = flag.Bool("save", false, "Save results on file in json and html format")
 	versionFlag   = flag.Bool("version", false, "Print version")
+	Tech          = flag.String("tech", "", "Setting a technologies")
 )
 
 func usage() {
@@ -52,12 +55,49 @@ func run(args []string, out io.Writer) int {
 		return 0
 	}
 
+	// check if Tech is chosen
+	if *Tech == "" {
+		flag.Usage()
+		return 1
+	} else {
+		// autenticate the user
+		token, err := insiderci.Autenticate(*emailFlag, *passwordFlag)
+		if err != nil {
+			fmt.Println(err.Error())
+			return 1
+		}
+		// get all Available technologies
+		techlist, err := insiderci.GetTech(token)
+		if err != nil {
+			fmt.Println(err.Error())
+			return 1
+		}
+		// seek for the tecnology inserted and get the id
+		tech_id, err := insiderci.ChooseTech(techlist, *Tech)
+		if err != nil {
+			fmt.Println(err.Error())
+			return 1
+		}
+		if *componentFlag == 0 {
+			path, _ := os.Getwd()
+			split := strings.Split(path, "/")
+			name := split[len(split)-2] + "-" + split[len(split)-1]
+			log.Println("Component name created automatically:", name)
+			*componentFlag, err = insiderci.GetComponet(token, name, tech_id)
+			if err != nil {
+				fmt.Println(err.Error())
+				return 1
+			}
+		}
+	}
+
 	if len(args) < 1 {
 		flag.Usage()
 		return 1
 	}
 
 	filename := args[0]
+
 	insider, err := insiderci.New(*emailFlag, *passwordFlag, filename, *componentFlag)
 	if err != nil {
 		fmt.Fprintf(out, "Error: %v\n", err)
