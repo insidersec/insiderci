@@ -23,6 +23,8 @@ insiderci is a utility that can be used on CI mats to perform tests on the Insid
         Save results on file in json and html format
   -score float
         Score to fail pipeline
+  -tech string
+    	Setting a technologie
   -version
         Print version
 ```
