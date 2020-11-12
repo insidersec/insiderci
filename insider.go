@@ -15,8 +15,8 @@ import (
 )
 
 var (
-	UploadURL = "https://dev.insidersec.io"
-	SastURL   = "https://backend.dev.insidersec.io"
+	UploadURL = "https://api.insidersec.io"
+	SastURL   = "https://backend.insidersec.io"
 )
 
 type sastError struct {
@@ -317,7 +317,8 @@ func ChooseTech(techlist ListTech, tech string) (int, error) {
 	}
 	fmt.Printf("\nAvailable technologies, please choose one. \n\n")
 	for _, v := range techlist {
-		fmt.Println(strings.ToLower(strings.ReplaceAll(v.Name, " ", "_")))
+		//fmt.Println(strings.ToLower(strings.ReplaceAll(v.Name, " ", "_")))
+		fmt.Println(v.Name)
 	}
 	fmt.Println("\nUsage:")
 	fmt.Printf("./insiderci -email \"<user-email>\" -password  \"<password>\" -score 80 -tech \"%v\"  \"<file-name>\" \n", techlist[1].Name)
