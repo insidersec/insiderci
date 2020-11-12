@@ -24,7 +24,7 @@ insiderci is a utility that can be used on CI mats to perform tests on the Insid
   -score float
         Score to fail pipeline
   -tech string
-    	Setting a technologie
+    	Setting a technology
   -version
         Print version
 ```
