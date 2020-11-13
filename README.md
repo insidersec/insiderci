@@ -23,24 +23,29 @@ insiderci is a utility that can be used on CI mats to perform tests on the Insid
         Save results on file in json and html format
   -score float
         Score to fail pipeline
+  -tech string
+    	Setting a technologie
   -version
         Print version
 ```
 ### Executando
 
 ```sh
-$ wget https://github.com/insidersec/insiderci/releases/download/v0.3.0/insiderci_0.3.0_linux_x86_64.tar.gz -q 
-$ tar -xf insiderci_0.3.0_linux_x86_64.tar.gz
+$ wget https://github.com/insidersec/insiderci/releases/download/v0.6.0/insiderci_linux_x86_64.tar.gz -q 
+$ tar -xf insiderci_linux_x86_64.tar.gz
 $ chmod +x ./insiderci
 $ ./insiderci -email "USUARIO" -password "SENHA" -score "SCORE" -component "ID_COMPONENTE"  "ARQUIVO"
+ou 
+./insiderci -email "USUARIO" -password "SENHA" -score "SCORE" -tech "TECNOLOGIA"  "ARQUIVO"
 ```
 | Variável | Descrição |
 | -------- | --------- |
 |USUÁRIO|Usuário do Insider.|
 |SENHA|Senha do Insider.|
 |SCORE|Score mínimo de segurança que é valido para prosseguir a pipeline.|
+|TECNOLOGIA| Escolha a tecnologia utilizada no projeto |
 |ID_COMPONENTE|ID do componente no Insider.|
-|ARQUIVO|Nome do arquivo que deve ser analisado.|
+|ARQUIVO|Caminho completo do arquivo que deve ser analisado. 
 
 #### Exemplo de execução
 ```sh
