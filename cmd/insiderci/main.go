@@ -56,37 +56,39 @@ func run(args []string, out io.Writer) int {
 	}
 
 	// check if Tech is chosen
-	if *Tech == "" {
-		flag.Usage()
-		return 1
-	} else {
-		// autenticate the user
-		token, err := insiderci.Autenticate(*emailFlag, *passwordFlag)
-		if err != nil {
-			fmt.Println(err.Error())
+	if *componentFlag == 0 {
+		if *Tech == "" {
+			flag.Usage()
 			return 1
-		}
-		// get all Available technologies
-		techlist, err := insiderci.GetTech(token)
-		if err != nil {
-			fmt.Println(err.Error())
-			return 1
-		}
-		// seek for the tecnology inserted and get the id
-		tech_id, err := insiderci.ChooseTech(techlist, *Tech)
-		if err != nil {
-			fmt.Println(err.Error())
-			return 1
-		}
-		if *componentFlag == 0 {
-			path, _ := os.Getwd()
-			split := strings.Split(path, "/")
-			name := split[len(split)-2] + "-" + split[len(split)-1]
-			log.Println("Component name created automatically:", name)
-			*componentFlag, err = insiderci.GetComponet(token, name, tech_id)
+		} else {
+			// autenticate the user
+			token, err := insiderci.Autenticate(*emailFlag, *passwordFlag)
 			if err != nil {
 				fmt.Println(err.Error())
 				return 1
+			}
+			// get all Available technologies
+			techlist, err := insiderci.GetTech(token)
+			if err != nil {
+				fmt.Println(err.Error())
+				return 1
+			}
+			// seek for the tecnology inserted and get the id
+			tech_id, err := insiderci.ChooseTech(techlist, *Tech)
+			if err != nil {
+				fmt.Println(err.Error())
+				return 1
+			}
+			if *componentFlag == 0 {
+				path, _ := os.Getwd()
+				split := strings.Split(path, "/")
+				name := split[len(split)-2] + "-" + split[len(split)-1]
+				log.Println("Component name created automatically:", name)
+				*componentFlag, err = insiderci.GetComponet(token, name, tech_id)
+				if err != nil {
+					fmt.Println(err.Error())
+					return 1
+				}
 			}
 		}
 	}
