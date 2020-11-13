@@ -40,7 +40,7 @@ $ tar -xf insiderci_linux_x86_64.tar.gz
 $ chmod +x ./insiderci
 $ ./insiderci -email "USUARIO" -password "SENHA" -score "SCORE" -component "ID_COMPONENTE"  "ARQUIVO"
 ou 
-./insiderci -email "USUARIO" -password "SENHA" -score "SCORE" -tech "TECNOLOGIA"  "ARQUIVO"
+$./insiderci -email "USUARIO" -password "SENHA" -score "SCORE" -tech "TECNOLOGIA"  "ARQUIVO"
 ```
 | Variável | Descrição |
 | -------- | --------- |
@@ -53,6 +53,6 @@ ou
 
 #### Exemplo de execução
 ```sh
-$ ./insiderci -email 'insider@insider.com' -password 'senha123' -score 80 -component 1 'build.zip'
+$ ./insiderci -email 'user@insider.com' -password $pass -score 80 -component 1 'build.zip'
 ```
 Para iniciar a analise é necessário ter acesso a plataforma do Insider, um componente criado e um arquivo zip/apk/ipa pronto para analise. O InsiderCI vai esperar até a analise ser finaliza, e após isso, caso alguma vulnerabilidade seja encontrada, será finalizado com erro.
