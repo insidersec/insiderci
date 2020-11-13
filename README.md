@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://www.insidersec.io/wp-content/uploads/2020/11/cover-linkedin2.png">
+  <p align="center">
+    
 # InsiderCI
 Insider CI é um utilitário que pode ser utilizado em todas esteiras de CI para realizar execuções na plataforma [Insider](https://insidersec.io/).
 
