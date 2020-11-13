@@ -31,7 +31,7 @@ insiderci is a utility that can be used on CI mats to perform tests on the Insid
 ### Executando
 
 ```sh
-$ wget https://github.com/insidersec/insiderci/releases/download/v0.6.0/insiderci_linux_x86_64.tar.gz -q 
+$ wget https://github.com/insidersec/insiderci/releases/latest/download/insiderci_linux_x86_64.tar.gz -q 
 $ tar -xf insiderci_linux_x86_64.tar.gz
 $ chmod +x ./insiderci
 $ ./insiderci -email "USUARIO" -password "SENHA" -score "SCORE" -component "ID_COMPONENTE"  "ARQUIVO"
