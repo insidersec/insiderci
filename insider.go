@@ -96,18 +96,18 @@ type Insider struct {
 	component int
 }
 
-func Autenticate(email, password string) (string, error) {
-	token, err := auhenticate(email, password)
+func Authenticate(email, password string) (string, error) {
+	token, err := authenticate(email, password)
 	if err != nil {
-		return "", fmt.Errorf("auhenticate %w", err)
+		return "", fmt.Errorf("authenticate %w", err)
 	}
 	return token, nil
 }
 
 func New(email, password, filename string, component int) (*Insider, error) {
-	token, err := auhenticate(email, password)
+	token, err := authenticate(email, password)
 	if err != nil {
-		return nil, fmt.Errorf("auhenticate %w", err)
+		return nil, fmt.Errorf("authenticate %w", err)
 	}
 	return &Insider{
 		logger:    log.New(os.Stderr, "", log.LstdFlags),
@@ -239,7 +239,7 @@ func (i *Insider) request(method, url string, body io.Reader) (*http.Request, er
 	return req, nil
 }
 
-func auhenticate(email, password string) (string, error) {
+func authenticate(email, password string) (string, error) {
 	data := map[string]string{
 		"email":    email,
 		"password": password,

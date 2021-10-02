@@ -61,8 +61,8 @@ func run(args []string, out io.Writer) int {
 			flag.Usage()
 			return 1
 		} else {
-			// autenticate the user
-			token, err := insiderci.Autenticate(*emailFlag, *passwordFlag)
+			// authenticate the user
+			token, err := insiderci.Authenticate(*emailFlag, *passwordFlag)
 			if err != nil {
 				fmt.Println(err.Error())
 				return 1
@@ -81,7 +81,7 @@ func run(args []string, out io.Writer) int {
 			}
 			if *componentFlag == 0 {
 				path, _ := os.Getwd()
-				split := strings.Split(path, "/")
+				split := strings.Split(path, string(os.PathSeparator))
 				name := split[len(split)-2] + "-" + split[len(split)-1]
 				log.Println("Component name created automatically:", name)
 				*componentFlag, err = insiderci.GetComponet(token, name, tech_id)
