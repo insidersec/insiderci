@@ -221,12 +221,35 @@ func (i *Insider) startAnalysis() (Sast, error) {
 		return Sast{}, fmt.Errorf(sastErr.Message)
 	}
 
-	var s sastExecution
-	if err := json.Unmarshal(b, &s); err != nil {
-		return Sast{}, fmt.Errorf("unexpected success response: %v", err)
-	}
+	// var s sastExecution
+	// if err := json.Unmarshal(b, &s); err != nil {
+	// 	return Sast{}, fmt.Errorf("unexpected success response: %v", err)
+	// }
 
-	return s.SastCreated, nil
+	// API has changed 
+	// now it can returns a map of file parts that has been uploaded 
+	// 
+	// to perform CI (continous integration) we consider just the first element 
+	// returned by the API as the COMPONENT the be watched during the next cycles
+	// 
+	// this works since CI only uploads one file per time ... 
+	// 
+	var dat map[string]interface{}
+	if err := json.Unmarshal(b, &dat); err != nil { 
+        Sast{}, fmt.Errorf("unexpected success response: %v", err)
+    }
+
+    uploadedFiles := reflect.ValueOf(dat).MapKeys()
+
+    // we only look for ID of the COMPONENT returned by the API ... 
+
+	var sx Sast
+	sx.ID, _ = strconv.Atoi(dat[keys[0].Interface().(string)].(map[string]interface{})["ID"].(string))
+
+	fmt.Println("returned value => %v", sx)
+
+	return sx, nil 
+	// return s.SastCreated, nil
 }
 
 func (i *Insider) request(method, url string, body io.Reader) (*http.Request, error) {
