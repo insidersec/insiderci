@@ -246,7 +246,7 @@ func (i *Insider) startAnalysis() (Sast, error) {
     // we only look for ID of the COMPONENT returned by the API ... 
 
 	var sx Sast
-	sx.ID, _ = strconv.Atoi(dat[keys[0].Interface().(string)].(map[string]interface{})["ID"].(string))
+	sx.ID, _ = strconv.Atoi(dat[keys[0].Interface().(string)].(map[string]interface{})["id"].(string))
 
 	fmt.Println("returned value => %v", sx)
 
