@@ -240,15 +240,13 @@ func (i *Insider) startAnalysis() (Sast, error) {
 	if err := json.Unmarshal(b, &dat); err != nil {
 		return Sast{}, fmt.Errorf("unexpected success response: %v", err)
 	}
-	fmt.Println(dat)
+
 	uploadedFiles := reflect.ValueOf(dat).MapKeys()
 
 	// we only look for ID of the COMPONENT returned by the API ...
 
 	var sx Sast
 	sx.ID, _ = strconv.Atoi(dat[uploadedFiles[0].Interface().(string)].(map[string]interface{})["id"].(string))
-
-	fmt.Println("returned value => %v", sx)
 
 	return sx, nil
 	// return s.SastCreated, nil
