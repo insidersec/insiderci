@@ -10,10 +10,10 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
-	"strings"
-	"time"
 	"reflect"
 	"strconv"
+	"strings"
+	"time"
 )
 
 var (
@@ -228,29 +228,29 @@ func (i *Insider) startAnalysis() (Sast, error) {
 	// 	return Sast{}, fmt.Errorf("unexpected success response: %v", err)
 	// }
 
-	// API has changed 
-	// now it can returns a map of file parts that has been uploaded 
-	// 
-	// to perform CI (continous integration) we consider just the first element 
+	// API has changed
+	// now it can returns a map of file parts that has been uploaded
+	//
+	// to perform CI (continous integration) we consider just the first element
 	// returned by the API as the COMPONENT the be watched during the next cycles
-	// 
-	// this works since CI only uploads one file per time ... 
-	// 
+	//
+	// this works since CI only uploads one file per time ...
+	//
 	var dat map[string]interface{}
-	if err := json.Unmarshal(b, &dat); err != nil { 
-        return Sast{}, fmt.Errorf("unexpected success response: %v", err)
-    }
+	if err := json.Unmarshal(b, &dat); err != nil {
+		return Sast{}, fmt.Errorf("unexpected success response: %v", err)
+	}
 	fmt.Println(dat)
-    uploadedFiles := reflect.ValueOf(dat).MapKeys()
+	uploadedFiles := reflect.ValueOf(dat).MapKeys()
 
-    // we only look for ID of the COMPONENT returned by the API ... 
+	// we only look for ID of the COMPONENT returned by the API ...
 
 	var sx Sast
-	sx.ID, _ = strconv.Atoi(dat[uploadedFiles[0].Interface().(string)].(map[string]interface{})["ID"].(string))
+	sx.ID, _ = strconv.Atoi(dat[uploadedFiles[0].Interface().(string)].(map[string]interface{})["id"].(string))
 
 	fmt.Println("returned value => %v", sx)
 
-	return sx, nil 
+	return sx, nil
 	// return s.SastCreated, nil
 }
 
